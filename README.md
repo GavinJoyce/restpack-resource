@@ -2,7 +2,7 @@
 
 REST resource paging, side-loading, filtering and sorting:
 
-```
+```ruby
 class Group
   include DataMapper::Resource
   include RESTPack::Resource
