@@ -12,35 +12,35 @@ module RestPack
       protected
       
       def get_paged_resource(options)
-        entities = get_entities(options)        
+        page = get_page(options)        
 
         result = {
-          :page => entities.pager.current_page,
-          :page_count => entities.pager.total_pages,
-          :total => entities.pager.total,
-          :previous_page => entities.pager.previous_page,
-          :next_page => entities.pager.next_page
+          :page => page.pager.current_page,
+          :page_count => page.pager.total_pages,
+          :total => page.pager.total,
+          :previous_page => page.pager.previous_page,
+          :next_page => page.pager.next_page
         }
 
-        unless entities.empty?
-          result[self.resource_collection_name] = entities.map {|i| i.to_resource() }
+        unless page.empty?
+          result[self.resource_collection_name] = page.map {|i| i.to_resource() }
 
           options[:includes].each do |association|
-            result[association] = side_load(entities, association)
+            result[association] = side_load(page, association)
           end
         end
 
         result
       end
       
-      def get_entities(options)
+      def get_page(options)
         order = options[:sort_by]
         order = order.desc if order && options[:sort_direction] == :descending
         
         options[:scope].all(:conditions => options[:filters]).page(options[:page], :order => order)
       end
       
-      def side_load(entities, association)
+      def side_load(page, association)
         target_model_name = association.to_s.singularize.capitalize              
         relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
         raise InvalidInclude if relationships.empty?
@@ -51,7 +51,7 @@ module RestPack
           unless relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
             raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
           end
-          side_loaded_entities += entities.map do |entity| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
+          side_loaded_entities += page.map do |entity| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
             relation = entity.send(relationship.name.to_sym)
             relation ? relation.to_resource : nil
           end
