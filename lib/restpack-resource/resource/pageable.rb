@@ -6,6 +6,12 @@ module RestPack
       def paged_resource(params = {}, overrides = {})
         options = build_options(params, overrides)
         
+        get_paged_resource(options)
+      end
+      
+      protected
+      
+      def get_paged_resource(options)
         entities = get_entities(options)        
 
         result = {
@@ -26,8 +32,6 @@ module RestPack
 
         result
       end
-      
-      protected
       
       def get_entities(options)
         order = options[:sort_by]
