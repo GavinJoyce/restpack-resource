@@ -9,37 +9,21 @@ module RestPack
         order = options[:sort_by]
         order = order.desc if order && options[:sort_direction] == :descending
         
-        collection = options[:scope].all(:conditions => options[:filters]).page(options[:page], :order => order)         
+        entities = options[:scope].all(:conditions => options[:filters]).page(options[:page], :order => order)         
 
         result = {
-          :page => collection.pager.current_page,
-          :page_count => collection.pager.total_pages,
-          :total => collection.pager.total,
-          :previous_page => collection.pager.previous_page,
-          :next_page => collection.pager.next_page
+          :page => entities.pager.current_page,
+          :page_count => entities.pager.total_pages,
+          :total => entities.pager.total,
+          :previous_page => entities.pager.previous_page,
+          :next_page => entities.pager.next_page
         }
 
-        unless collection.empty?
-          result[self.resource_collection_name] = collection.map {|i| i.to_resource() }
+        unless entities.empty?
+          result[self.resource_collection_name] = entities.map {|i| i.to_resource() }
 
           options[:includes].each do |association|
-            target_model_name = association.to_s.singularize.capitalize              
-            relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
-            raise InvalidInclude if relationships.empty?
-
-            result[association] = []
-
-            relationships.each do |relationship|
-              unless relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
-                raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
-              end
-              result[association] += collection.map do |entity| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
-                relation = entity.send(relationship.name.to_sym)
-                relation ? relation.to_resource : nil
-              end
-              result[association].uniq!
-              result[association].compact!
-            end
+            result[association] = side_load(entities, association)
           end
         end
 
@@ -47,6 +31,28 @@ module RestPack
       end
       
       protected
+      
+      def side_load(entities, association)
+        target_model_name = association.to_s.singularize.capitalize              
+        relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
+        raise InvalidInclude if relationships.empty?
+
+        side_loaded_entities = []
+
+        relationships.each do |relationship|
+          unless relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
+            raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
+          end
+          side_loaded_entities += entities.map do |entity| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
+            relation = entity.send(relationship.name.to_sym)
+            relation ? relation.to_resource : nil
+          end
+          side_loaded_entities.uniq!
+          side_loaded_entities.compact!
+        end
+        
+        side_loaded_entities
+      end
       
       def resource_collection_name
         self.name.to_s.downcase.pluralize.to_sym
