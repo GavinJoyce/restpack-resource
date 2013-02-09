@@ -15,12 +15,12 @@ describe RestPack::Resource do
         before(:each) do
           @artist = FactoryGirl.create(:artist)
           3.times { FactoryGirl.create(:song, artist: @artist) }
-          12.times { FactoryGirl.create(:song) }
+          9.times { FactoryGirl.create(:song) }
         end
         
         it "should return the total count" do
           result = Song.paged_resource()
-          result[:total].should == 15
+          result[:total].should == 12
         end
         
         it "should filter results" do          

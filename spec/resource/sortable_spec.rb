@@ -13,7 +13,7 @@ describe RestPack::Resource do
       
       context "with valid options" do
         before(:each) do
-          30.times { FactoryGirl.create(:artist) }
+          20.times { FactoryGirl.create(:artist) }
         end
         
         it "should default to ascending" do
@@ -26,8 +26,8 @@ describe RestPack::Resource do
         it "should allow sort_direction of descending" do
           result = Artist.paged_resource(:sort_by => :id, :sort_direction => :descending)
           result[:total].should == Artist.count
-          result[:artists].first[:id].should == 30
-          result[:artists].last[:id].should == 21
+          result[:artists].first[:id].should == 20
+          result[:artists].last[:id].should == 11
         end
 
         it "should allow sort_by and sort_direction to be string or symbol" do
