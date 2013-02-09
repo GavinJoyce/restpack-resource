@@ -14,7 +14,7 @@ module RestPack
       def get_paged_resource(options)
         page = get_page(options)        
 
-        result = {
+        paged_resource = {
           :page => page.pager.current_page,
           :page_count => page.pager.total_pages,
           :total => page.pager.total,
@@ -23,14 +23,14 @@ module RestPack
         }
 
         unless page.empty?
-          result[self.resource_collection_name] = page.map {|i| i.to_resource() }
+          paged_resource[self.resource_collection_name] = page.map {|i| i.to_resource() }
 
           options[:includes].each do |association|
-            result[association] = side_load(page, association)
+            paged_resource[association] = side_load(page, association)
           end
         end
 
-        result
+        paged_resource
       end
       
       def get_page(options)
