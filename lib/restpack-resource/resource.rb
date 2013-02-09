@@ -15,7 +15,7 @@ module RESTpack
       super
     end
     
-    def to_api(options = {})
+    def to_resource(options = {})
       self
     end
 
