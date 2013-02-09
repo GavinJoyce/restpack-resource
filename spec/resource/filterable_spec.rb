@@ -1,5 +1,4 @@
 require './spec/spec_helper'
-require './lib/restpack-resource'
 
 describe RestPack::Resource do
   describe "#resource_paged_resource" do 
