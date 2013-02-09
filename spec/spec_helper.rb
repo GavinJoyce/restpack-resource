@@ -22,7 +22,7 @@ DataMapper::Pagination.defaults[:per_page] = 10
 
 class Artist
   include DataMapper::Resource
-  include RESTpack::Resource
+  include RestPack::Resource
   property :id, Serial
   property :name, String
   timestamps :at
@@ -36,7 +36,7 @@ end
 
 class Song
   include DataMapper::Resource
-  include RESTpack::Resource
+  include RestPack::Resource
   property :id, Serial
   property :name, String
   property :artist_id, Integer
@@ -56,7 +56,7 @@ end
 
 class Comment
   include DataMapper::Resource
-  include RESTpack::Resource
+  include RestPack::Resource
   property :id, Serial
   property :song_id, Integer
   property :text, String
@@ -68,7 +68,7 @@ end
 
 class User
   include DataMapper::Resource
-  include RESTpack::Resource
+  include RestPack::Resource
   property :id, Serial
   property :name, String
   timestamps :at

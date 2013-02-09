@@ -1,6 +1,6 @@
 %w{pageable filterable sortable includable}.each {|m| require "restpack-resource/resource/#{m}" }
 
-module RESTpack
+module RestPack
     module Resource
     class InvalidInclude < Exception; end
     class InvalidFilter < Exception; end
@@ -8,10 +8,10 @@ module RESTpack
     
     def self.included(base)
       base.extend(ClassMethods)
-      base.extend(RESTpack::Resource::Pageable)
-      base.extend(RESTpack::Resource::Filterable)
-      base.extend(RESTpack::Resource::Sortable)
-      base.extend(RESTpack::Resource::Includable)
+      base.extend(RestPack::Resource::Pageable)
+      base.extend(RestPack::Resource::Filterable)
+      base.extend(RestPack::Resource::Sortable)
+      base.extend(RestPack::Resource::Includable)
       super
     end
     

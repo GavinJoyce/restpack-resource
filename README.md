@@ -1,11 +1,11 @@
 # restpack-resource [![Build Status](https://travis-ci.org/RESTpack/restpack-resource.png?branch=master)](https://travis-ci.org/RESTpack/restpack-resource) [![Code Climate](https://codeclimate.com/github/RESTpack/restpack-resource.png)](https://codeclimate.com/github/RESTpack/restpack-resource) [![Dependency Status](https://gemnasium.com/RESTpack/restpack-resource.png)](https://gemnasium.com/RESTpack/restpack-resource)
 
-REST resource paging, side-loading, filtering and sorting:
+RESTful resource paging, side-loading, filtering and sorting:
 
 ```ruby
 class Group
   include DataMapper::Resource
-  include RESTPack::Resource
+  include RestPack::Resource
 
   property :id, Serial
   property :name, String, :length => 128

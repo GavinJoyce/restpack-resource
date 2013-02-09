@@ -1,6 +1,6 @@
 require 'active_support/core_ext/hash'
 
-module RESTpack
+module RestPack
   module Resource
     module Sortable
       def resource_sortable_by

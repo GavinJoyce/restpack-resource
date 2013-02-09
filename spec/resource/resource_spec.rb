@@ -1,12 +1,12 @@
 require './spec/spec_helper'
 require './lib/restpack-resource'
 
-describe RESTpack::Resource do
+describe RestPack::Resource do
   context "Resource Setup" do
     before :each do
       class MyModel
         include DataMapper::Resource
-        include RESTpack::Resource
+        include RestPack::Resource
         property :id, Serial
         property :name, String
         property :age, Integer

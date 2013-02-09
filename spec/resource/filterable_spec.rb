@@ -1,12 +1,12 @@
 require './spec/spec_helper'
 require './lib/restpack-resource'
 
-describe RESTpack::Resource do
+describe RestPack::Resource do
   describe "#resource_paged_resource" do 
     context "when filtering" do
       context "with invalid options" do
         it "should not allow invalid filters" do
-          expect { Artist.resource_paged_resource(:filters => {:this_is_invalid => 4}) }.to raise_error(RESTpack::Resource::InvalidFilter)
+          expect { Artist.resource_paged_resource(:filters => {:this_is_invalid => 4}) }.to raise_error(RestPack::Resource::InvalidFilter)
         end
       end
       

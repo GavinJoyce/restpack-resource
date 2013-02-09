@@ -5,10 +5,10 @@ require 'restpack-resource/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "restpack-resource"
-  gem.version       = RESTpack::Resource::VERSION
+  gem.version       = RestPack::Resource::VERSION
   gem.authors       = ["Gavin Joyce"]
   gem.email         = ["gavinjoyce@gmail.com"]
-  gem.description   = %q{REST resource paging, side-loading, filtering and sorting}
+  gem.description   = %q{RESTful resource paging, side-loading, filtering and sorting}
   gem.summary       = %q{...}
   gem.homepage      = "https://github.com/RESTpack/restpack-resource"
 
