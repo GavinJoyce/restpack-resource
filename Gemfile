@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 group :test do
+  gem 'rake', '~> 10.0.3'
   gem 'rspec', :require => 'spec'
   gem 'datamapper', '~> 1.2.0'
   gem 'dm-pager', '~> 1.1.0'
