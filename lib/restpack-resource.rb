@@ -1,0 +1,1 @@
+require 'restpack-resource/version'
