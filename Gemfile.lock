@@ -1,6 +1,15 @@
+PATH
+  remote: .
+  specs:
+    restpack-resource (0.0.1)
+      active_support (~> 3.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
+    active_support (3.0.0)
+      activesupport (= 3.0.0)
+    activesupport (3.0.0)
     addressable (2.2.8)
     bcrypt-ruby (3.0.1)
     data_objects (0.10.12)
@@ -77,4 +86,5 @@ DEPENDENCIES
   datamapper (~> 1.2.0)
   dm-pager (~> 1.1.0)
   dm-sqlite-adapter (~> 1.2.0)
+  restpack-resource!
   rspec

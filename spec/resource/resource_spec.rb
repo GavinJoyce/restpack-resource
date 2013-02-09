@@ -1,0 +1,50 @@
+require './spec/spec_helper'
+require './lib/restpack-resource'
+
+describe RESTpack::Resource do
+  context "Resource Setup" do
+    before :each do
+      class MyModel
+        include DataMapper::Resource
+        include RESTpack::Resource
+        property :id, Serial
+        property :name, String
+        property :age, Integer
+      end
+      DataMapper.auto_migrate!
+    end
+    
+    describe "#resource_can_include" do
+      it "allows association to be set" do
+        MyModel.resource_includable_associations.length == 0
+        class MyModel        
+          resource_can_include :association1
+          resource_can_include :association2, :association3
+        end
+        MyModel.resource_includable_associations.should == [:association1, :association2, :association3]
+      end
+    end
+  
+  # describe "#api_can_filter_by" do
+  #   it "allows filterable columns to be set" do
+  #     MyModel.api_filterable_by.length == 0
+  #     class MyModel        
+  #       api_can_filter_by :id
+  #       api_can_filter_by :name, :age
+  #     end
+  #     MyModel.api_filterable_by.should == [:id, :name, :age]
+  #   end
+  # end
+  #
+  # describe "#api_can_sort_by" do
+  #   it "allows sortable columns to be set" do
+  #     MyModel.api_sortable_by.length == 0
+  #     class MyModel        
+  #       api_can_sort_by :id
+  #       api_can_sort_by :name, :age
+  #     end
+  #     MyModel.api_sortable_by.should == [:id, :name, :age]
+  #   end
+  # end
+  end
+end

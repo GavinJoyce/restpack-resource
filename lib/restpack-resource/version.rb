@@ -1,5 +1,5 @@
-module RESTPack
-  module Service
+module RESTpack
+  module Resource
     VERSION = "0.0.1"
   end
 end

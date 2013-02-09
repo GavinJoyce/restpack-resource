@@ -5,7 +5,7 @@ require 'restpack-resource/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "restpack-resource"
-  gem.version       = RESTPack::Service::VERSION
+  gem.version       = RESTpack::Resource::VERSION
   gem.authors       = ["Gavin Joyce"]
   gem.email         = ["gavinjoyce@gmail.com"]
   gem.description   = %q{REST resource paging, side-loading, filtering and sorting}

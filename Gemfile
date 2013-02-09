@@ -6,3 +6,5 @@ group :test do
   gem 'dm-pager', '~> 1.1.0'
   gem 'dm-sqlite-adapter', '~> 1.2.0'
 end
+
+gemspec
