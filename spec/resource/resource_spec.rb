@@ -25,26 +25,26 @@ describe RESTpack::Resource do
       end
     end
   
-  # describe "#api_can_filter_by" do
-  #   it "allows filterable columns to be set" do
-  #     MyModel.api_filterable_by.length == 0
-  #     class MyModel        
-  #       api_can_filter_by :id
-  #       api_can_filter_by :name, :age
-  #     end
-  #     MyModel.api_filterable_by.should == [:id, :name, :age]
-  #   end
-  # end
-  #
-  # describe "#api_can_sort_by" do
-  #   it "allows sortable columns to be set" do
-  #     MyModel.api_sortable_by.length == 0
-  #     class MyModel        
-  #       api_can_sort_by :id
-  #       api_can_sort_by :name, :age
-  #     end
-  #     MyModel.api_sortable_by.should == [:id, :name, :age]
-  #   end
-  # end
+   describe "#resource_can_filter_by" do
+     it "allows filterable columns to be set" do
+       MyModel.resource_filterable_by.length == 0
+       class MyModel        
+         resource_can_filter_by :id
+         resource_can_filter_by :name, :age
+       end
+       MyModel.resource_filterable_by.should == [:id, :name, :age]
+     end
+   end
+  
+   describe "#resource_can_sort_by" do
+     it "allows sortable columns to be set" do
+       MyModel.resource_sortable_by.length == 0
+       class MyModel        
+         resource_can_sort_by :id
+         resource_can_sort_by :name, :age
+       end
+       MyModel.resource_sortable_by.should == [:id, :name, :age]
+     end
+   end
   end
 end

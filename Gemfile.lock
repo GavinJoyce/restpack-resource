@@ -68,6 +68,7 @@ GEM
     json (1.7.6)
     json_pure (1.7.6)
     multi_json (1.5.0)
+    rake (10.0.3)
     rspec (2.12.0)
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
@@ -86,5 +87,6 @@ DEPENDENCIES
   datamapper (~> 1.2.0)
   dm-pager (~> 1.1.0)
   dm-sqlite-adapter (~> 1.2.0)
+  rake (~> 10.0.3)
   restpack-resource!
   rspec
