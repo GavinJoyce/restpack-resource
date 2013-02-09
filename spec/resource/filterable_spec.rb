@@ -11,7 +11,7 @@ describe RestPack::Resource do
       end
       
       context "with valid options" do
-        it "should filter results" do
+        before(:each) do
           @gavin = User.create(name: 'Gavin')
           @sarah = User.create(name: 'Sarah')
           @artist = Artist.create(:name => 'Radiohead')
@@ -21,7 +21,9 @@ describe RestPack::Resource do
           
           @frusciante = Artist.create(:name => 'John Frusciante')
           @carvel = Song.create(:name => 'Carvel', :artist => @frusciante, :creator => @gavin, :modifier => @sarah)
-          
+        end
+        
+        it "should filter results" do          
           result = Song.resource_paged_resource(:filters => {:artist_id => @artist.id})
           result[:total].should == 3
         end
