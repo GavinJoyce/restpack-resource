@@ -3,7 +3,7 @@ require 'active_support/core_ext/hash'
 module RestPack
   module Resource
     module Pageable
-      def resource_paged_resource(options = {})
+      def paged_resource(options = {})
         options.reverse_merge!(
           :scope => self.all,
           :page => 1,

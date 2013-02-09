@@ -1,12 +1,12 @@
 require './spec/spec_helper'
 
 describe RestPack::Resource do
-  describe "#resource_paged_resource" do 
+  describe "#paged_resource" do 
     context "when filtering" do
       context "with invalid options" do
         it "should not allow invalid filters" do
           expect do
-            Artist.resource_paged_resource(:filters => {:this_is_invalid => 4})
+            Artist.paged_resource(:filters => {:this_is_invalid => 4})
           end.to raise_error(RestPack::Resource::InvalidFilter)
         end
       end
@@ -19,12 +19,12 @@ describe RestPack::Resource do
         end
         
         it "should return the total count" do
-          result = Song.resource_paged_resource()
+          result = Song.paged_resource()
           result[:total].should == 15
         end
         
         it "should filter results" do          
-          result = Song.resource_paged_resource(:filters => {:artist_id => @artist.id})
+          result = Song.paged_resource(:filters => {:artist_id => @artist.id})
           result[:total].should == 3
         end
       end
