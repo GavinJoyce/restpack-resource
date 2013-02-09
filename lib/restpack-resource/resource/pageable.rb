@@ -2,20 +2,10 @@ require 'active_support/core_ext/hash'
 
 module RestPack
   module Resource
-    module Pageable
-      def paged_resource(options = {})
-        options.reverse_merge!(
-          :scope => self.all,
-          :page => 1,
-          :includes => [],
-          :filters => {},
-          :sort_by => nil,
-          :sort_direction => :ascending,
-          :counts => []
-        )
-        resource_normalise_options!(options)
-        resource_validate_options!(options)
-        
+    module Pageable      
+      def paged_resource(params = {}, overrides = {})
+        options = build_options(params, overrides)
+                
         order = options[:sort_by]
         order = order.desc if order && options[:sort_direction] == :descending
         
@@ -55,9 +45,42 @@ module RestPack
 
         result
       end
-
+      
+      protected
+      
       def resource_collection_name
         self.name.to_s.downcase.pluralize.to_sym
+      end
+      
+      def build_options(params, overrides)
+        #TODO: GJ: filter params based on whitelist (page, includes, allowed filter keys, allowed sort keys, sort direction)
+        
+        options = overrides.reverse_merge( #overrides take precedence over params
+          :page => params[:page],
+          :includes => params[:includes].nil? ? [] : params[:includes].split(','),
+          :filters =>  self.extract_filters_from_params(params),
+          :sort_by => params[:sort_by], 
+          :sort_direction => params[:sort_direction]
+        )
+        
+        options.reverse_merge!( #defaults
+          :scope => self.all,
+          :page => 1,
+          :includes => [],
+          :filters => {},
+          :sort_by => nil,
+          :sort_direction => :ascending
+        )
+
+        resource_normalise_options!(options)
+        resource_validate_options!(options)
+        
+        options
+      end
+      
+      def extract_filters_from_params(params)
+        extracted = params.extract!(*self.resource_filterable_by)
+        extracted.delete_if { |k, v| v.nil? }
       end
       
       private
