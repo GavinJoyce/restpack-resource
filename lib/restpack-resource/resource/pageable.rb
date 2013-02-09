@@ -52,9 +52,7 @@ module RestPack
         self.name.to_s.downcase.pluralize.to_sym
       end
       
-      def build_options(params, overrides)
-        #TODO: GJ: filter params based on whitelist (page, includes, allowed filter keys, allowed sort keys, sort direction)
-        
+      def build_options(params, overrides)        
         options = overrides.reverse_merge( #overrides take precedence over params
           :page => params[:page],
           :includes => params[:includes].nil? ? [] : params[:includes].split(','),
