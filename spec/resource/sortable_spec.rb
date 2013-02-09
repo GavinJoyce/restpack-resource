@@ -13,7 +13,7 @@ describe RestPack::Resource do
       
       context "with valid options" do
         before(:each) do
-          20.times { FactoryGirl.create(:artist) }
+          20.times { create(:artist) }
         end
         
         it "should default to ascending" do

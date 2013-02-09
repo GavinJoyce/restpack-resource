@@ -83,7 +83,6 @@ class User
   end
 end
 
-
 FactoryGirl.find_definitions
 
 RSpec.configure do |config|
@@ -91,6 +90,8 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
   config.order = 'random'
+  
+  config.include FactoryGirl::Syntax::Methods
   
   config.before(:each) do
     DataMapper.auto_migrate!

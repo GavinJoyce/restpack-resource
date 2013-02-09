@@ -4,7 +4,7 @@ describe RestPack::Resource do
   describe "#paged_resource" do    
     context "when paging" do
       before(:each) do
-        16.times { FactoryGirl.create(:song) }
+        16.times { create(:song) }
       end
       
       it "has a valid first page" do

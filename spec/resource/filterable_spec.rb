@@ -13,9 +13,9 @@ describe RestPack::Resource do
       
       context "with valid options" do
         before(:each) do
-          @artist = FactoryGirl.create(:artist)
-          3.times { FactoryGirl.create(:song, artist: @artist) }
-          9.times { FactoryGirl.create(:song) }
+          @artist = create(:artist)
+          3.times { create(:song, artist: @artist) }
+          9.times { create(:song) }
         end
         
         it "should return the total count" do
