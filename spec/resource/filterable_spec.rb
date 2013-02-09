@@ -18,13 +18,9 @@ describe RestPack::Resource do
           @codex = Song.create(:name => 'Codex', :artist => @artist, :creator => @gavin, :modifier => @sarah)
           @bloom = Song.create(:name => 'Bloom', :artist => @artist)
           @gagging_order = Song.create(:name => 'Gagging Order', :artist => @artist)
-
-          25.times do |i|
-            artist = Artist.create(name: "Artist #{i}")
-            song1 = Song.create(name: "Song #{i}.1", artist: artist)
-            song2 = Song.create(name: "Song #{i}.2", artist: artist)
-            comment = Comment.create(:text => 'This is fansastic live', :song => song2)
-          end
+          
+          @frusciante = Artist.create(:name => 'John Frusciante')
+          @carvel = Song.create(:name => 'Carvel', :artist => @frusciante, :creator => @gavin, :modifier => @sarah)
           
           result = Song.resource_paged_resource(:filters => {:artist_id => @artist.id})
           result[:total].should == 3
