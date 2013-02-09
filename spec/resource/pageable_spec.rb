@@ -11,7 +11,7 @@ describe RestPack::Resource do
         it "should return an empty array" do
           result = Song.paged_resource()
           result.should_not == nil
-          result[:songs].should_not == nil
+          result[:songs].should == []
         end
       end
       
