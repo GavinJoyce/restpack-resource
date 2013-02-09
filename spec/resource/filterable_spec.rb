@@ -6,21 +6,22 @@ describe RestPack::Resource do
     context "when filtering" do
       context "with invalid options" do
         it "should not allow invalid filters" do
-          expect { Artist.resource_paged_resource(:filters => {:this_is_invalid => 4}) }.to raise_error(RestPack::Resource::InvalidFilter)
+          expect do
+            Artist.resource_paged_resource(:filters => {:this_is_invalid => 4})
+          end.to raise_error(RestPack::Resource::InvalidFilter)
         end
       end
       
       context "with valid options" do
         before(:each) do
-          @gavin = User.create(name: 'Gavin')
-          @sarah = User.create(name: 'Sarah')
-          @artist = Artist.create(:name => 'Radiohead')
-          @codex = Song.create(:name => 'Codex', :artist => @artist, :creator => @gavin, :modifier => @sarah)
-          @bloom = Song.create(:name => 'Bloom', :artist => @artist)
-          @gagging_order = Song.create(:name => 'Gagging Order', :artist => @artist)
-          
-          @frusciante = Artist.create(:name => 'John Frusciante')
-          @carvel = Song.create(:name => 'Carvel', :artist => @frusciante, :creator => @gavin, :modifier => @sarah)
+          @artist = FactoryGirl.create(:artist)
+          3.times { FactoryGirl.create(:song, artist: @artist) }
+          12.times { FactoryGirl.create(:song) }
+        end
+        
+        it "should return the total count" do
+          result = Song.resource_paged_resource()
+          result[:total].should == 15
         end
         
         it "should filter results" do          

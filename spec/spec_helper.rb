@@ -10,6 +10,7 @@ require 'dm-migrations'
 require 'dm-types'
 require 'dm-serializer'
 require 'dm-pager'
+require 'factory_girl'
 
 require './lib/restpack-resource'
 
@@ -25,7 +26,7 @@ class Artist
   include RestPack::Resource
   property :id, Serial
   property :name, String
-  timestamps :at
+  #timestamps :at #NOTE: GJ: FactoryGirl is not saving when DM timestamps are used
   
   validates_presence_of :name
   has n, :songs
@@ -42,7 +43,7 @@ class Song
   property :artist_id, Integer
   property :created_by, Integer
   property :modified_by, Integer
-  timestamps :at
+  #timestamps :at
 
   validates_presence_of :name
   belongs_to :artist
@@ -60,7 +61,7 @@ class Comment
   property :id, Serial
   property :song_id, Integer
   property :text, String
-  timestamps :at
+  #timestamps :at
   
   validates_presence_of :text
   belongs_to :song
@@ -71,7 +72,7 @@ class User
   include RestPack::Resource
   property :id, Serial
   property :name, String
-  timestamps :at
+  #timestamps :at
   
   def to_resource
     {
@@ -82,12 +83,16 @@ class User
   end
 end
 
-DataMapper.auto_migrate!
+
+FactoryGirl.find_definitions
 
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
-
   config.order = 'random'
+  
+  config.before(:each) do
+    DataMapper.auto_migrate!
+  end
 end

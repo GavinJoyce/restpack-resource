@@ -64,6 +64,8 @@ GEM
       dm-core (~> 1.2.0)
     do_sqlite3 (0.10.12)
       data_objects (= 0.10.12)
+    factory_girl (4.2.0)
+      activesupport (>= 3.0.0)
     fastercsv (1.5.5)
     json (1.7.6)
     json_pure (1.7.6)
@@ -87,6 +89,7 @@ DEPENDENCIES
   datamapper (~> 1.2.0)
   dm-pager (~> 1.1.0)
   dm-sqlite-adapter (~> 1.2.0)
+  factory_girl (~> 4.2.0)
   rake (~> 10.0.3)
   restpack-resource!
   rspec
