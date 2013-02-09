@@ -5,11 +5,8 @@ module RestPack
     module Pageable      
       def paged_resource(params = {}, overrides = {})
         options = build_options(params, overrides)
-                
-        order = options[:sort_by]
-        order = order.desc if order && options[:sort_direction] == :descending
         
-        entities = options[:scope].all(:conditions => options[:filters]).page(options[:page], :order => order)         
+        entities = get_entities(options)        
 
         result = {
           :page => entities.pager.current_page,
@@ -31,6 +28,13 @@ module RestPack
       end
       
       protected
+      
+      def get_entities(options)
+        order = options[:sort_by]
+        order = order.desc if order && options[:sort_direction] == :descending
+        
+        options[:scope].all(:conditions => options[:filters]).page(options[:page], :order => order)
+      end
       
       def side_load(entities, association)
         target_model_name = association.to_s.singularize.capitalize              
