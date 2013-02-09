@@ -5,7 +5,6 @@ module RestPack
     module Pageable      
       def paged_resource(params = {}, overrides = {})
         options = build_options(params, overrides)
-        
         get_paged_resource(options)
       end
       
@@ -22,9 +21,9 @@ module RestPack
           :next_page => page.pager.next_page
         }
 
-        unless page.empty?
-          paged_resource[self.resource_collection_name] = page.map {|i| i.to_resource() }
+        paged_resource[self.resource_collection_name] = page.map { |item| item.to_resource() }
 
+        unless page.empty?
           options[:includes].each do |association|
             paged_resource[association] = side_load(page, association)
           end
