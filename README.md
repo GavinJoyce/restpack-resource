@@ -50,7 +50,7 @@ end
 
 Which gives you endpoints such as:
 
-```/api/v1/channels.json?includes=applications,domains,configurations```
+`/api/v1/channels.json?includes=applications,domains,configurations`
 
 ```javascript
 {
