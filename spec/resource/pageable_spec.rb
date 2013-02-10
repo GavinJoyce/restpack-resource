@@ -51,25 +51,18 @@ describe RestPack::Resource do
             end
           end
           
-          context "OneToMany" do   
-            it "should not allow invalid relations" do
-              expect do
-                Artist.paged_resource(:includes => 'invalid_relations')
-              end.to raise_error(RestPack::Resource::InvalidInclude, "Artist.invalid_relations is not an includable relation")
-            end
+          it "should not allow invalid relations" do
+            expect do
+              Artist.paged_resource(:includes => 'invalid_relations')
+            end.to raise_error(RestPack::Resource::InvalidInclude, "Artist.invalid_relations is not an includable relation")
           end
+
           
           context "ManyToOne" do
             it "should not allow includes that have not been specified with 'resource_can_include'" do
               expect do
                 Comment.paged_resource(:includes => 'songs')
               end.to raise_error(RestPack::Resource::InvalidInclude, "Comment.songs is not an includable relation")
-            end
-
-            it "should not allow a 'has_many' include when paging" do
-              expect do
-                Artist.paged_resource(:includes => 'songs')
-              end.to raise_error(RestPack::Resource::InvalidInclude, "Artist.songs can't be included when paging artists")
             end
 
             it "should return related entities from a 'belongs_to' relationship" do
@@ -87,6 +80,24 @@ describe RestPack::Resource do
               result[:users].size.should == 20
             end
           end
+          
+          
+          context "OneToMany" do
+            before(:each) do
+              @artist_with_two_songs = Artist.first
+              create(:song, artist: @artist_with_two_songs)
+            end
+            
+            it "should return related entities from a 'has n' relationship" do
+              result = Artist.paged_resource(:includes => 'songs')
+              result.should_not == nil
+              result[:songs].should_not == nil
+              result[:songs].size.should == 11
+              
+              result[:songs].select {|song| song.artist == @artist_with_two_songs }.length.should == 2
+            end
+          end
+          
         end
       end
     end

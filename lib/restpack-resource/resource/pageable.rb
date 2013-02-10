@@ -47,17 +47,27 @@ module RestPack
         side_loaded_entities = []
 
         relationships.each do |relationship|
-          unless relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
+          if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
+            side_loaded_entities += page.map do |entity| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
+              relation = entity.send(relationship.name.to_sym)
+              relation ? relation.to_resource : nil
+            end
+          elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship
+            parent_key_name = relationship.parent_key.first.name
+            child_key_name = relationship.child_key.first.name        
+            foreign_keys = page.map {|e| e.send(parent_key_name)}.uniq
+    
+            #TODO: GJ: configurable side-load page size
+            #TODO: GJ: set the side-load count
+            children = relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: 100 })
+            side_loaded_entities += children.map { |c| c.to_resource }
+          else
             raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
           end
-          side_loaded_entities += page.map do |entity| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
-            relation = entity.send(relationship.name.to_sym)
-            relation ? relation.to_resource : nil
-          end
-          side_loaded_entities.uniq!
-          side_loaded_entities.compact!
         end
         
+        side_loaded_entities.uniq!
+        side_loaded_entities.compact!
         side_loaded_entities
       end
       
