@@ -119,7 +119,7 @@ module RestPack
       def resource_validate_options!(options)
         self.resource_validate_includes! options[:includes]
         self.resource_validate_filters! options[:filters]
-        self.resource_validate_sort_by! options[:sort_by]
+        self.resource_validate_sort_by! options[:sort_by] 
       end
     end
   end

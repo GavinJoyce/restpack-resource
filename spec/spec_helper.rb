@@ -33,6 +33,14 @@ class Artist
   
   resource_can_include :songs
   resource_can_sort_by :id, :name
+  
+  def as_resource
+    {
+      id: id,
+      name: name,
+      url: "/api/v1/artists/#{id}"
+    }
+  end
 end
 
 class Song

@@ -14,7 +14,7 @@ module RestPack
       end
       def resource_validate_includes!(includes)
         includes.each do |include|
-          unless self.resource_includable_associations.include?(include)
+          unless self.resource_includable_associations.include?(include.to_sym)
             raise InvalidInclude, "#{self.name}.#{include} is not an includable relation"
           end
         end

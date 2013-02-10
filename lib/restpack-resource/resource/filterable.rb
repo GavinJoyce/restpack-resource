@@ -13,6 +13,7 @@ module RestPack
         self.resource_filterable_by += columns
       end
       def resource_validate_filters!(filters)
+        return unless filters
         filters.keys.each do |filter|
           raise InvalidFilter.new unless self.resource_filterable_by.include?(filter)
         end

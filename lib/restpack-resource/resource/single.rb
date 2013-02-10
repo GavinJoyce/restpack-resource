@@ -1,5 +1,6 @@
 module RestPack
   module Resource
+    #NOTE: GJ: this need a great big refactor
     module Single      
       def single_resource(params = {}, overrides = {})
         options = build_single_options(params, overrides)
@@ -11,7 +12,49 @@ module RestPack
       def get_single_resource(options)
         model = self.get(options[:id])
         
-        model_as_resource(model)
+        raise "404" unless model #TODO: GJ: decide on error handling / status
+        resource = model_as_resource(model)
+        
+        options[:includes].each do |association|
+          add_single_side_loads(resource, model, association)
+        end
+        
+        resource
+      end
+      
+      def add_single_side_loads(resource, model, association)
+        target_model_name = association.to_s.singularize.capitalize  
+         
+        relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
+        raise InvalidInclude if relationships.empty?
+
+        side_loaded_entities = []
+
+        relationships.each do |relationship|
+          if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
+            relation = model.send(relationship.name.to_sym)
+            
+            side_loaded_entities << (relation ? model_as_resource(relation) : nil)
+          elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship
+            parent_key_name = relationship.parent_key.first.name
+            child_key_name = relationship.child_key.first.name        
+            foreign_key = model.send(parent_key_name)
+                
+            #TODO: GJ: configurable side-load page size
+            children = relationship.child_model.all(child_key_name.to_sym => foreign_key).page({ per_page: 100 })
+            side_loaded_entities += children.map { |c| model_as_resource(c) }
+            
+            count_key = "#{relationship.child_model_name.downcase}_count".to_sym
+            resource[count_key] = children.pager.total
+          else
+            raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
+          end
+        end
+        
+        side_loaded_entities.uniq!
+        side_loaded_entities.compact!
+        
+        resource[association] = side_loaded_entities
       end
       
       def build_single_options(params, overrides)        
@@ -23,13 +66,12 @@ module RestPack
         options.reverse_merge!( #defaults
           :includes => []
         )
-        
+
         raise InvalidArguments, "id must be specified" unless params[:id]
         
-        resource_validate_includes! options[:includes]
-
+        resource_normalise_options!(options)
+        resource_validate_options!(options)
         #TODO: GJ: other validations
-        
         options
       end
     end
