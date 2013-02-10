@@ -74,7 +74,7 @@ class User
   property :name, String
   #timestamps :at
   
-  def to_resource
+  def as_resource
     {
       id: id,
       name: name,

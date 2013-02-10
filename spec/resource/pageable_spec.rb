@@ -39,7 +39,7 @@ describe RestPack::Resource do
         end
       
         context "when side-loading" do
-          it "should return related entities with their #to_resource representation" do
+          it "should return related entities with their #as_resource representation" do
             result = Song.paged_resource(:includes => 'users')
             result[:users][0][:custom].should == 'This is custom data'
           end

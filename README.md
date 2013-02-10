@@ -22,7 +22,7 @@ class Channel
   resource_can_filter_by :id
   resource_can_sort_by :id, :created_at, :modified_at
   
-  def to_resource
+  def as_resource
     {
       :id => id,
       :name => name,

@@ -15,7 +15,7 @@ module RestPack
       super
     end
     
-    def to_resource(options = {})
+    def as_resource(options = {})
       self
     end
 

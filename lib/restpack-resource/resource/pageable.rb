@@ -107,7 +107,7 @@ module RestPack
       end
       
       def model_as_resource(model)
-        model.to_resource() 
+        model.as_resource() 
       end
       
       private
