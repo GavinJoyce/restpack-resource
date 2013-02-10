@@ -25,7 +25,7 @@ module RestPack
 
         unless page.empty?
           options[:includes].each do |association|
-            paged_resource[association] = side_load(page, association)
+            add_side_loads(paged_resource, page, association)
           end
         end
 
@@ -39,7 +39,7 @@ module RestPack
         options[:scope].all(:conditions => options[:filters]).page(options[:page], :order => order)
       end
       
-      def side_load(page, association)
+      def add_side_loads(paged_resource, page, association)
         target_model_name = association.to_s.singularize.capitalize              
         relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
         raise InvalidInclude if relationships.empty?
@@ -56,11 +56,13 @@ module RestPack
             parent_key_name = relationship.parent_key.first.name
             child_key_name = relationship.child_key.first.name        
             foreign_keys = page.map {|e| e.send(parent_key_name)}.uniq
-    
+                
             #TODO: GJ: configurable side-load page size
-            #TODO: GJ: set the side-load count
             children = relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: 100 })
             side_loaded_entities += children.map { |c| c.to_resource }
+            
+            count_key = "#{relationship.child_model_name.downcase}_count".to_sym
+            paged_resource[count_key] = children.pager.total
           else
             raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
           end
@@ -68,7 +70,7 @@ module RestPack
         
         side_loaded_entities.uniq!
         side_loaded_entities.compact!
-        side_loaded_entities
+        paged_resource[association] = side_loaded_entities
       end
       
       def resource_collection_name
