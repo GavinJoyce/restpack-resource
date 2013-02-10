@@ -1,10 +1,11 @@
-%w{pageable filterable sortable includable}.each {|m| require "restpack-resource/resource/#{m}" }
+%w{pageable filterable sortable includable single}.each {|m| require "restpack-resource/resource/#{m}" }
 
 module RestPack
     module Resource
     class InvalidInclude < Exception; end
     class InvalidFilter < Exception; end
     class InvalidSortBy < Exception; end
+    class InvalidArguments < Exception; end
     
     def self.included(base)
       base.extend(ClassMethods)
@@ -12,6 +13,7 @@ module RestPack
       base.extend(RestPack::Resource::Filterable)
       base.extend(RestPack::Resource::Sortable)
       base.extend(RestPack::Resource::Includable)
+      base.extend(RestPack::Resource::Single)
       super
     end
     
@@ -20,8 +22,8 @@ module RestPack
     end
 
     module ClassMethods
-      def resource_single_resource(options = {})
-        
+      def model_as_resource(model)
+        model.as_resource() 
       end
     end
   end

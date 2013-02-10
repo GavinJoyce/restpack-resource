@@ -53,6 +53,15 @@ class Song
   
   resource_can_include :artists, :users
   resource_can_filter_by :artist_id
+  
+  def as_resource
+    {
+      id: id,
+      name: name,
+      artist_id: artist_id,
+      url: "/api/v1/songs/#{id}"
+    }
+  end
 end
 
 class Comment

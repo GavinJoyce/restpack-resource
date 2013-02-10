@@ -94,7 +94,7 @@ describe RestPack::Resource do
               result[:songs].should_not == nil
               result[:songs].size.should == 11
               
-              result[:songs].select { |song| song.artist == @artist_with_two_songs }.length.should == 2
+              result[:songs].select { |song| song[:artist_id] == @artist_with_two_songs.id }.length.should == 2
               result[:song_count].should == 11
             end
           end

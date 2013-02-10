@@ -4,7 +4,7 @@ module RestPack
   module Resource
     module Pageable      
       def paged_resource(params = {}, overrides = {})
-        options = build_options(params, overrides)
+        options = build_paged_options(params, overrides)
         get_paged_resource(options)
       end
       
@@ -77,7 +77,7 @@ module RestPack
         self.name.to_s.downcase.pluralize.to_sym
       end
       
-      def build_options(params, overrides)        
+      def build_paged_options(params, overrides)        
         options = overrides.reverse_merge( #overrides take precedence over params
           :page => params[:page],
           :includes => params[:includes].nil? ? [] : params[:includes].split(','),
@@ -104,10 +104,6 @@ module RestPack
       def extract_filters_from_params(params)
         extracted = params.extract!(*self.resource_filterable_by)
         extracted.delete_if { |k, v| v.nil? }
-      end
-      
-      def model_as_resource(model)
-        model.as_resource() 
       end
       
       private
