@@ -21,7 +21,7 @@ module RestPack
           :next_page => page.pager.next_page
         }
 
-        paged_resource[self.resource_collection_name] = page.map { |item| item.to_resource() }
+        paged_resource[self.resource_collection_name] = page.map { |item| model_as_resource(item) }
 
         unless page.empty?
           options[:includes].each do |association|
@@ -50,7 +50,7 @@ module RestPack
           if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
             side_loaded_entities += page.map do |entity| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
               relation = entity.send(relationship.name.to_sym)
-              relation ? relation.to_resource : nil
+              relation ? model_as_resource(relation) : nil
             end
           elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship
             parent_key_name = relationship.parent_key.first.name
@@ -59,7 +59,7 @@ module RestPack
                 
             #TODO: GJ: configurable side-load page size
             children = relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: 100 })
-            side_loaded_entities += children.map { |c| c.to_resource }
+            side_loaded_entities += children.map { |c| model_as_resource(c) }
             
             count_key = "#{relationship.child_model_name.downcase}_count".to_sym
             paged_resource[count_key] = children.pager.total
@@ -104,6 +104,10 @@ module RestPack
       def extract_filters_from_params(params)
         extracted = params.extract!(*self.resource_filterable_by)
         extracted.delete_if { |k, v| v.nil? }
+      end
+      
+      def model_as_resource(model)
+        model.to_resource() 
       end
       
       private
