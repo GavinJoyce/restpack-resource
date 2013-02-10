@@ -38,49 +38,53 @@ describe RestPack::Resource do
           result[:artists].size.should == 6
         end
       
-        context "when including relations" do        
-          it "should not allow invalid relations" do
-            expect do
-              Artist.paged_resource(:includes => 'invalid_relations')
-            end.to raise_error(RestPack::Resource::InvalidInclude, "Artist.invalid_relations is not an includable relation")
-          end
-        
-          it "should not allow includes that have not been specified with 'resource_can_include' NEW" do
-            expect do
-              Comment.paged_resource(:includes => 'songs')
-            end.to raise_error(RestPack::Resource::InvalidInclude, "Comment.songs is not an includable relation")
-          end
-        
-          it "should not allow a 'has_many' include when paging" do
-            expect do
-              Artist.paged_resource(:includes => 'songs')
-            end.to raise_error(RestPack::Resource::InvalidInclude, "Artist.songs can't be included when paging artists")
-          end
-        
-          it "should return related entities from a 'belongs_to' relationship" do
-            result = Song.paged_resource(:includes => 'artists')
-            result.should_not == nil
-            result[:artists].should_not == nil
-            result[:artists].size.should == 10
-          end
-        
-          it "should allow multiple includes" do
-            result = Song.paged_resource(:includes => 'artists,users')
-            result.should_not == nil
-            result[:artists].should_not == nil
-            result[:artists].size.should == 10
-            result[:users].size.should == 20
-          end
-        
+        context "when side-loading" do
           it "should return related entities with their #to_resource representation" do
             result = Song.paged_resource(:includes => 'users')
             result[:users][0][:custom].should == 'This is custom data'
           end
-        
+
           context "when specifying overrides" do
             it "should give overrides precidence" do
               result = Artist.paged_resource({ page: 2 }, { page: 3 })
               result[:page].should == 3
+            end
+          end
+          
+          context "OneToMany" do   
+            it "should not allow invalid relations" do
+              expect do
+                Artist.paged_resource(:includes => 'invalid_relations')
+              end.to raise_error(RestPack::Resource::InvalidInclude, "Artist.invalid_relations is not an includable relation")
+            end
+          end
+          
+          context "ManyToOne" do
+            it "should not allow includes that have not been specified with 'resource_can_include'" do
+              expect do
+                Comment.paged_resource(:includes => 'songs')
+              end.to raise_error(RestPack::Resource::InvalidInclude, "Comment.songs is not an includable relation")
+            end
+
+            it "should not allow a 'has_many' include when paging" do
+              expect do
+                Artist.paged_resource(:includes => 'songs')
+              end.to raise_error(RestPack::Resource::InvalidInclude, "Artist.songs can't be included when paging artists")
+            end
+
+            it "should return related entities from a 'belongs_to' relationship" do
+              result = Song.paged_resource(:includes => 'artists')
+              result.should_not == nil
+              result[:artists].should_not == nil
+              result[:artists].size.should == 10
+            end
+
+            it "should allow multiple includes" do
+              result = Song.paged_resource(:includes => 'artists,users')
+              result.should_not == nil
+              result[:artists].should_not == nil
+              result[:artists].size.should == 10
+              result[:users].size.should == 20
             end
           end
         end
