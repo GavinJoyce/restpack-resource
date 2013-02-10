@@ -1,5 +1,3 @@
-require "bundler/gem_tasks"
-
 task :default => :test
 task :test => :spec
 
@@ -11,4 +9,22 @@ begin
     t.rspec_opts = ['-cfs']
   end
 rescue LoadError
+end
+
+
+task :gem do
+  ["gem:build", "gem:push"].each do |task|
+    Rake::Task[task].reenable
+    Rake::Task[task].invoke
+  end
+end
+
+namespace :gem do 
+  task :build do
+    sh "gem build restpack-resource.gemspec"
+  end
+  
+  task :push do
+    sh "gem push restpack-resource-#{RestPack::Resource::VERSION}.gem"
+  end
 end
