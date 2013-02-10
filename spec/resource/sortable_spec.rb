@@ -18,23 +18,23 @@ describe RestPack::Resource do
         
         it "should default to ascending" do
           result = Artist.paged_resource(:sort_by => :id)
-          result[:total].should == Artist.count
+          result[:count].should == Artist.count
           result[:artists].first[:id].should == 1
           result[:artists].last[:id].should == 10
         end
 
         it "should allow sort_direction of descending" do
           result = Artist.paged_resource(:sort_by => :id, :sort_direction => :descending)
-          result[:total].should == Artist.count
+          result[:count].should == Artist.count
           result[:artists].first[:id].should == 20
           result[:artists].last[:id].should == 11
         end
 
         it "should allow sort_by and sort_direction to be string or symbol" do
           result = Artist.paged_resource(:sort_by => 'id', :sort_direction => 'descending')
-          result[:total].should == Artist.count
+          result[:count].should == Artist.count
           result = Artist.paged_resource(:sort_by => :id, :sort_direction => :descending)
-          result[:total].should == Artist.count
+          result[:count].should == Artist.count
         end
       end
     end

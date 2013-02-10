@@ -23,7 +23,7 @@ describe RestPack::Resource do
         it "has a valid first page" do
           result = Artist.paged_resource()
           result[:page].should == 1
-          result[:total].should == 16
+          result[:count].should == 16
           result[:page_count].should == 2
           result[:previous_page].should == nil
           result[:next_page].should == 2

@@ -16,7 +16,7 @@ module RestPack
         paged_resource = {
           :page => page.pager.current_page,
           :page_count => page.pager.total_pages,
-          :total => page.pager.total,
+          :count => page.pager.total,
           :previous_page => page.pager.previous_page,
           :next_page => page.pager.next_page
         }

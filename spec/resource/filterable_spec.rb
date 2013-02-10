@@ -12,12 +12,12 @@ describe RestPack::Resource do
         
         it "should return the total count" do
           result = Song.paged_resource()
-          result[:total].should == 12
+          result[:count].should == 12
         end
         
         it "should filter results" do
           result = Song.paged_resource(artist_id: @artist.id)
-          result[:total].should == 3
+          result[:count].should == 3
         end
       end
     end
