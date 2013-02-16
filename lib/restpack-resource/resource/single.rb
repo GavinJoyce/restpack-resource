@@ -15,41 +15,35 @@ module RestPack
         resource = model_as_resource(model)
         
         options[:includes].each do |association|
-          add_single_side_loads(resource, model, association)
+          resource.merge! get_single_side_loads(model, association)
         end
         
         resource
       end
       
-      def add_single_side_loads(resource, model, association)
-        target_model_name = association.to_s.singularize.capitalize  
-        side_loaded_entities = []
+      def get_single_side_loads(model, association)        
+        side_loads = {}
+        resources = []
 
         association_relationships(association).each do |relationship|
           if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
             relation = model.send(relationship.name.to_sym)
             
-            side_loaded_entities << (relation ? model_as_resource(relation) : nil)
+            resources << (relation ? model_as_resource(relation) : nil)
           elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship
             parent_key_name = relationship.parent_key.first.name
-            child_key_name = relationship.child_key.first.name
-            foreign_key = model.send(parent_key_name)
-                
-            #TODO: GJ: configurable side-load page size
-            children = relationship.child_model.all(child_key_name.to_sym => foreign_key).page({ per_page: 100 })
-            side_loaded_entities += children.map { |c| model_as_resource(c) }
+            foreign_keys = [model.send(parent_key_name)]
             
-            count_key = "#{relationship.child_model_name.downcase}_count".to_sym
-            resource[count_key] = children.pager.total
+            side_load = get_one_to_many_side_loads(relationship, foreign_keys)
+            resources += side_load[:resources]
+            side_loads[side_load[:count_key]] = side_load[:count]
           else
             invalid_include relationship
           end
         end
-        
-        side_loaded_entities.uniq!
-        side_loaded_entities.compact!
-        
-        resource[association] = side_loaded_entities
+
+        side_loads[association] = resources.uniq.compact
+        side_loads
       end
       
       def build_single_options(params, overrides)        

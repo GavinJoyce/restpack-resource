@@ -38,6 +38,15 @@ module RestPack
         relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: page_size })
       end
       
+      def get_one_to_many_side_loads(relationship, foreign_keys)
+        result = {}            
+        children = get_child_models(relationship, foreign_keys, 100) #TODO: GJ: configurable side-load page size
+        result[:resources] = children.map {|c| c.as_resource() }
+        result[:count_key] = "#{relationship.child_model_name.downcase}_count".to_sym
+        result[:count] = children.pager.total
+        result
+      end
+      
       def invalid_include(relationship)
         raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
       end

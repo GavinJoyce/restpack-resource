@@ -46,8 +46,9 @@ module RestPack
         association_relationships(association).each do |relationship|
           if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
             resources += get_many_to_one_side_loads(paged_models, relationship)
-          elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship            
-            side_load = get_one_to_many_side_loads(paged_models, relationship)
+          elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship    
+            foreign_keys = get_foreign_keys(paged_models, relationship)        
+            side_load = get_one_to_many_side_loads(relationship, foreign_keys)
             resources += side_load[:resources]
             side_loads[side_load[:count_key]] = side_load[:count]
           else
@@ -66,15 +67,7 @@ module RestPack
         end
       end
       
-      def get_one_to_many_side_loads(paged_models, relationship)
-        result = {}            
-        foreign_keys = get_foreign_keys(paged_models, relationship)
-        children = get_child_models(relationship, foreign_keys, 100) #TODO: GJ: configurable side-load page size
-        result[:resources] = children.map {|c| c.as_resource() }
-        result[:count_key] = "#{relationship.child_model_name.downcase}_count".to_sym
-        result[:count] = children.pager.total
-        result
-      end
+      
       
       def get_foreign_keys(paged_models, relationship)
         parent_key_name = relationship.parent_key.first.name
