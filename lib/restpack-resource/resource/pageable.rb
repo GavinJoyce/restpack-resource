@@ -68,17 +68,12 @@ module RestPack
       
       def get_one_to_many_side_loads(paged_models, relationship)
         result = {}            
-        children = get_child_models(paged_models, relationship, 100) #TODO: GJ: configurable side-load page size
+        foreign_keys = get_foreign_keys(paged_models, relationship)
+        children = get_child_models(relationship, foreign_keys, 100) #TODO: GJ: configurable side-load page size
         result[:resources] = children.map {|c| c.as_resource() }
         result[:count_key] = "#{relationship.child_model_name.downcase}_count".to_sym
         result[:count] = children.pager.total
         result
-      end
-      
-      def get_child_models(paged_models, relationship, page_size = 100)
-        child_key_name = relationship.child_key.first.name
-        foreign_keys = get_foreign_keys(paged_models, relationship)
-        relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: page_size })
       end
       
       def get_foreign_keys(paged_models, relationship)

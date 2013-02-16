@@ -33,6 +33,11 @@ module RestPack
         relationships
       end
       
+      def get_child_models(relationship, foreign_keys, page_size)
+        child_key_name = relationship.child_key.first.name
+        relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: page_size })
+      end
+      
       def invalid_include(relationship)
         raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
       end
