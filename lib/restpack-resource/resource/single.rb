@@ -28,8 +28,7 @@ module RestPack
         association_relationships(association).each do |relationship|
           if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
             relation = model.send(relationship.name.to_sym)
-            
-            resources << (relation ? model_as_resource(relation) : nil)
+            resources << model_as_resource(relation)
           elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship
             parent_key_name = relationship.parent_key.first.name
             foreign_keys = [model.send(parent_key_name)]
