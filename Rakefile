@@ -1,3 +1,5 @@
+require_relative 'lib/restpack-resource/version'
+
 task :default => :test
 task :test => :spec
 
