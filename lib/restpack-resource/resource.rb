@@ -25,6 +25,17 @@ module RestPack
       def model_as_resource(model)
         model ? model.as_resource() : nil
       end
+      
+      def association_relationships(association)
+        target_model_name = association.to_s.singularize.capitalize              
+        relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
+        raise InvalidInclude if relationships.empty?
+        relationships
+      end
+      
+      def invalid_include(relationship)
+        raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
+      end
     end
   end
 end

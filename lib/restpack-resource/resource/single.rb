@@ -1,6 +1,5 @@
 module RestPack
   module Resource
-    #NOTE: GJ: this need a great big refactor
     module Single      
       def single_resource(params = {}, overrides = {})
         options = build_single_options(params, overrides)
@@ -24,20 +23,16 @@ module RestPack
       
       def add_single_side_loads(resource, model, association)
         target_model_name = association.to_s.singularize.capitalize  
-         
-        relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
-        raise InvalidInclude if relationships.empty?
-
         side_loaded_entities = []
 
-        relationships.each do |relationship|
+        association_relationships(association).each do |relationship|
           if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
             relation = model.send(relationship.name.to_sym)
             
             side_loaded_entities << (relation ? model_as_resource(relation) : nil)
           elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship
             parent_key_name = relationship.parent_key.first.name
-            child_key_name = relationship.child_key.first.name        
+            child_key_name = relationship.child_key.first.name
             foreign_key = model.send(parent_key_name)
                 
             #TODO: GJ: configurable side-load page size
@@ -47,7 +42,7 @@ module RestPack
             count_key = "#{relationship.child_model_name.downcase}_count".to_sym
             resource[count_key] = children.pager.total
           else
-            raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
+            invalid_include relationship
           end
         end
         
