@@ -47,6 +47,10 @@ module RestPack
         result
       end
       
+      def extract_includes_array_from_params(params)
+        params[:includes].nil? ? [] : params[:includes].split(',')
+      end
+      
       def invalid_include(relationship)
         raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
       end

@@ -81,7 +81,7 @@ module RestPack
       def build_paged_options(params, overrides)        
         options = overrides.reverse_merge( #overrides take precedence over params
           :page => params[:page],
-          :includes => params[:includes].nil? ? [] : params[:includes].split(','),
+          :includes => extract_includes_array_from_params(params),
           :filters =>  self.extract_filters_from_params(params),
           :sort_by => params[:sort_by], 
           :sort_direction => params[:sort_direction]

@@ -48,7 +48,7 @@ module RestPack
       def build_single_options(params, overrides)        
         options = overrides.reverse_merge( #overrides take precedence over params
           :id => params[:id],
-          :includes => params[:includes].nil? ? [] : params[:includes].split(',') #TODO: GJ: refactor, repeated in pageable
+          :includes => extract_includes_array_from_params(params)
         )
         
         options.reverse_merge!( #defaults
