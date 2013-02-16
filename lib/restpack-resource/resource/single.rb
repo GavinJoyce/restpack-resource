@@ -18,6 +18,7 @@ module RestPack
       protected
       
       def get_single_resource(options)
+        p "options: #{options}"
         model = self.get(options[:id])
         
         raise "404" unless model #TODO: GJ: decide on error handling / status

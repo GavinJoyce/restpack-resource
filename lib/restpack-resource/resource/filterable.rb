@@ -7,7 +7,7 @@ module RestPack
         @resource_filterable_by || []
       end
       def resource_filterable_by=(columns)
-        @resource_filterable_by = columns
+        @resource_filterable_by = columns.uniq
       end
       def resource_can_filter_by(*columns)
         self.resource_filterable_by += columns

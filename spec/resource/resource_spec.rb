@@ -19,7 +19,7 @@ describe RestPack::Resource do
         MyModel.resource_includable_associations.length == 0
         class MyModel        
           resource_can_include :association1
-          resource_can_include :association2, :association3
+          resource_can_include :association2, :association3, :association3
         end
         MyModel.resource_includable_associations.should == [:association1, :association2, :association3]
       end
@@ -31,6 +31,7 @@ describe RestPack::Resource do
        class MyModel        
          resource_can_filter_by :id
          resource_can_filter_by :name, :age
+         resource_can_filter_by :name, :age
        end
        MyModel.resource_filterable_by.should == [:id, :name, :age]
      end
@@ -41,7 +42,7 @@ describe RestPack::Resource do
        MyModel.resource_sortable_by.length == 0
        class MyModel        
          resource_can_sort_by :id
-         resource_can_sort_by :name, :age
+         resource_can_sort_by :name, :age, :id
        end
        MyModel.resource_sortable_by.should == [:id, :name, :age]
      end

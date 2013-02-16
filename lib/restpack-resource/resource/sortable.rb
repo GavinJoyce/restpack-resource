@@ -7,7 +7,7 @@ module RestPack
         @resource_sortable_by || []
       end
       def resource_sortable_by=(columns)
-        @resource_sortable_by = columns
+        @resource_sortable_by = columns.uniq
       end
       def resource_can_sort_by(*columns)
         self.resource_sortable_by += columns

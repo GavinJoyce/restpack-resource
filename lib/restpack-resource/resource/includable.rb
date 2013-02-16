@@ -7,7 +7,7 @@ module RestPack
         @resource_includable_associations || []
       end
       def resource_includable_associations=(associations)
-        @resource_includable_associations = associations
+        @resource_includable_associations = associations.uniq
       end
       def resource_can_include(*associations)
         self.resource_includable_associations += associations
