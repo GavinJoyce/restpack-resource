@@ -41,27 +41,29 @@ module RestPack
       
       def get_side_loads(paged_models, association)
         side_loads = {}
-        
-        target_model_name = association.to_s.singularize.capitalize              
-        relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
-        raise InvalidInclude if relationships.empty?
+        resources = []
 
-        side_loaded_entities = []
-
-        relationships.each do |relationship|
+        get_association_relationships(association).each do |relationship|
           if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
-            side_loaded_entities += get_many_to_one_side_loads(paged_models, relationship)
+            resources += get_many_to_one_side_loads(paged_models, relationship)
           elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship            
             side_load = get_one_to_many_side_loads(paged_models, relationship)
-            side_loaded_entities += side_load[:resources]
+            resources += side_load[:resources]
             side_loads[side_load[:count_key]] = side_load[:count]
           else
             raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
           end
         end
         
-        side_loads[association] = side_loaded_entities.uniq.compact
+        side_loads[association] = resources.uniq.compact
         side_loads
+      end
+      
+      def get_association_relationships(association)
+        target_model_name = association.to_s.singularize.capitalize              
+        relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
+        raise InvalidInclude if relationships.empty?
+        relationships
       end
       
       def get_many_to_one_side_loads(paged_models, relationship)
