@@ -25,8 +25,7 @@ module RestPack
 
         unless paged_models.empty?
           options[:includes].each do |association|
-            side_loads = get_side_loads(paged_models, association)
-            paged_resource.merge!(side_loads)
+            paged_resource.merge! get_side_loads(paged_models, association)
           end
         end
 
@@ -51,33 +50,41 @@ module RestPack
 
         relationships.each do |relationship|
           if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
-            side_loaded_entities += paged_models.map do |model| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
-              relation = model.send(relationship.name.to_sym)
-              relation ? model_as_resource(relation) : nil
-            end
-          elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship
-            parent_key_name = relationship.parent_key.first.name
-            child_key_name = relationship.child_key.first.name        
-            foreign_keys = paged_models.map {|e| e.send(parent_key_name)}.uniq
-                
-            #TODO: GJ: configurable side-load page size
-            children = relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: 100 })
-            side_loaded_entities += children.map { |c| model_as_resource(c) }
-            
-            count_key = "#{relationship.child_model_name.downcase}_count".to_sym
-            side_loads[count_key] = children.pager.total
+            side_loaded_entities += get_many_to_one_side_loads(paged_models, relationship)
+          elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship            
+            side_load = get_one_to_many_side_loads(paged_models, relationship)
+            side_loaded_entities += side_load[:resources]
+            side_loads[side_load[:count_key]] = side_load[:count]
           else
             raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
           end
         end
         
-        side_loaded_entities.uniq!
-        side_loaded_entities.compact!
-        side_loads[association] = side_loaded_entities
+        side_loads[association] = side_loaded_entities.uniq.compact
         side_loads
       end
       
-
+      def get_many_to_one_side_loads(paged_models, relationship)
+        paged_models.map do |model| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
+          relation = model.send(relationship.name.to_sym)
+          model_as_resource(relation)
+        end
+      end
+      
+      
+      def get_one_to_many_side_loads(paged_models, relationship)
+        result = {}
+        parent_key_name = relationship.parent_key.first.name
+        child_key_name = relationship.child_key.first.name        
+        foreign_keys = paged_models.map {|e| e.send(parent_key_name)}.uniq
+            
+        #TODO: GJ: configurable side-load page size
+        children = relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: 100 })
+        result[:resources] = children.map { |c| model_as_resource(c) }
+        result[:count_key] = "#{relationship.child_model_name.downcase}_count".to_sym
+        result[:count] = children.pager.total
+        result
+      end
       
       def resource_collection_name
         self.name.to_s.downcase.pluralize.to_sym

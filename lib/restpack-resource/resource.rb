@@ -23,7 +23,7 @@ module RestPack
 
     module ClassMethods
       def model_as_resource(model)
-        model.as_resource() 
+        model ? model.as_resource() : nil
       end
     end
   end
