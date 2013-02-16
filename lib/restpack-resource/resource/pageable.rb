@@ -11,28 +11,28 @@ module RestPack
       protected
       
       def get_paged_resource(options)
-        page = get_page(options)        
+        paged_models = get_paged_models(options)        
 
         paged_resource = {
-          :page => page.pager.current_page,
-          :page_count => page.pager.total_pages,
-          :count => page.pager.total,
-          :previous_page => page.pager.previous_page,
-          :next_page => page.pager.next_page
+          :page => paged_models.pager.current_page,
+          :page_count => paged_models.pager.total_pages,
+          :count => paged_models.pager.total,
+          :previous_page => paged_models.pager.previous_page,
+          :next_page => paged_models.pager.next_page
         }
 
-        paged_resource[self.resource_collection_name] = page.map { |item| model_as_resource(item) }
+        paged_resource[self.resource_collection_name] = paged_models.map { |model| model_as_resource(model) }
 
         unless page.empty?
           options[:includes].each do |association|
-            add_side_loads(paged_resource, page, association)
+            add_side_loads(paged_resource, paged_models, association)
           end
         end
 
         paged_resource
       end
       
-      def get_page(options)
+      def get_paged_models(options)
         order = options[:sort_by]
         order = order.desc if order && options[:sort_direction] == :descending
         
