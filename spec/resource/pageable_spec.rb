@@ -40,13 +40,13 @@ describe RestPack::Resource do
       
         context "when side-loading" do
           it "should return related entities with their #as_resource representation" do
-            result = Song.paged_resource(:includes => [:users])
+            result = Song.paged_resource(includes: [:users])
             result[:users][0][:custom].should == 'This is custom data'
           end
           
           it "should not allow invalid relations" do
             expect do
-              Artist.paged_resource(:includes => [:invalid_relations])
+              Artist.paged_resource(includes: [:invalid_relations])
             end.to raise_error(RestPack::Resource::InvalidInclude, "Artist.invalid_relations is not an includable relation")
           end
 
@@ -54,19 +54,19 @@ describe RestPack::Resource do
           context "ManyToOne" do
             it "should not allow includes that have not been specified with 'resource_can_include'" do
               expect do
-                Comment.paged_resource(:includes => [:songs])
+                Comment.paged_resource(includes: [:songs])
               end.to raise_error(RestPack::Resource::InvalidInclude, "Comment.songs is not an includable relation")
             end
 
             it "should return related entities from a 'belongs_to' relationship" do
-              result = Song.paged_resource(:includes => [:artists])
+              result = Song.paged_resource(includes: [:artists])
               result.should_not == nil
               result[:artists].should_not == nil
               result[:artists].size.should == 10
             end
 
             it "should allow multiple includes" do
-              result = Song.paged_resource(:includes => [:artists, :users])
+              result = Song.paged_resource(includes: [:artists, :users])
               result.should_not == nil
               result[:artists].should_not == nil
               result[:artists].size.should == 10
@@ -82,7 +82,7 @@ describe RestPack::Resource do
             end
             
             it "should return related entities from a 'has n' relationship" do
-              result = Artist.paged_resource(:includes => [:songs])
+              result = Artist.paged_resource(includes: [:songs])
               result.should_not == nil
               result[:songs].should_not == nil
               result[:songs].size.should == 11

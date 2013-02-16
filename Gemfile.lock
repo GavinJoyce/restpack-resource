@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    restpack-resource (0.1.0)
+    restpack-resource (0.1.1)
       activesupport (~> 3.2.11)
       datamapper (~> 1.2.0)
       dm-pager (~> 1.1.0)
