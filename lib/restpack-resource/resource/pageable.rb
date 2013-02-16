@@ -65,7 +65,7 @@ module RestPack
       end
       
       def get_many_to_one_side_loads(paged_models, relationship)
-        paged_models.map do |model| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
+        paged_models.map do |model|
           relation = model.send(relationship.name.to_sym)
           model_as_resource(relation)
         end
@@ -73,17 +73,23 @@ module RestPack
       
       
       def get_one_to_many_side_loads(paged_models, relationship)
-        result = {}
-        parent_key_name = relationship.parent_key.first.name
-        child_key_name = relationship.child_key.first.name        
-        foreign_keys = paged_models.map {|e| e.send(parent_key_name)}.uniq
-            
-        #TODO: GJ: configurable side-load page size
-        children = relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: 100 })
-        result[:resources] = children.map { |c| model_as_resource(c) }
+        result = {}            
+        children = get_child_models(paged_models, relationship, 100) #TODO: GJ: configurable side-load page size
+        result[:resources] = children.map {|c| c.as_resource() }
         result[:count_key] = "#{relationship.child_model_name.downcase}_count".to_sym
         result[:count] = children.pager.total
         result
+      end
+      
+      def get_child_models(paged_models, relationship, page_size = 100)
+        child_key_name = relationship.child_key.first.name
+        foreign_keys = get_foreign_keys(paged_models, relationship)
+        relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: page_size })
+      end
+      
+      def get_foreign_keys(paged_models, relationship)
+        parent_key_name = relationship.parent_key.first.name
+        paged_models.map {|e| e.send(parent_key_name)}.uniq
       end
       
       def resource_collection_name
