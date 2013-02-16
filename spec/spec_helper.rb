@@ -33,6 +33,7 @@ class Artist
   
   resource_can_include :songs
   resource_can_sort_by :id, :name
+  resource_can_filter_by :id, :name
   
   def as_resource
     {

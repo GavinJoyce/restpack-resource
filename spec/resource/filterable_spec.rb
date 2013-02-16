@@ -16,7 +16,7 @@ describe RestPack::Resource do
         end
         
         it "should filter results" do
-          result = Song.paged_resource(artist_id: @artist.id)
+          result = Song.paged_resource(:filters => { artist_id: @artist.id } )
           result[:count].should == 3
         end
       end

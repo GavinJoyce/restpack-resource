@@ -1,8 +1,17 @@
 module RestPack
   module Resource
     module Single      
-      def single_resource(params = {}, overrides = {})
-        options = build_single_options(params, overrides)
+      def single_resource(options = {})
+        raise InvalidArguments, "id must be specified" unless options[:id]
+        
+        options.reverse_merge!(
+          :includes => []
+        )
+        
+        resource_normalise_options!(options)
+        resource_validate_options!(options)
+        #TODO: GJ: other validations
+        
         get_single_resource(options)
       end
       
@@ -43,24 +52,6 @@ module RestPack
 
         side_loads[association] = resources.uniq.compact
         side_loads
-      end
-      
-      def build_single_options(params, overrides)        
-        options = overrides.reverse_merge( #overrides take precedence over params
-          :id => params[:id],
-          :includes => extract_includes_array_from_params(params)
-        )
-        
-        options.reverse_merge!( #defaults
-          :includes => []
-        )
-
-        raise InvalidArguments, "id must be specified" unless params[:id]
-        
-        resource_normalise_options!(options)
-        resource_validate_options!(options)
-        #TODO: GJ: other validations
-        options
       end
     end
   end

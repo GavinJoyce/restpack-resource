@@ -21,7 +21,7 @@ describe RestPack::Resource do
     end
     
     it "sideloads ManyToOne" do
-      result = Song.single_resource(:id => @song.id, :includes => 'artists')
+      result = Song.single_resource(:id => @song.id, :includes => [:artists])
       result[:id].should == @song.id
       
       result[:artists].should_not == nil
@@ -36,7 +36,7 @@ describe RestPack::Resource do
       end
       
       it "sideloads OneToMany relations" do
-        result = Artist.single_resource(:id => @artist.id, :includes => 'songs')
+        result = Artist.single_resource(:id => @artist.id, :includes => [:songs])
         result[:id].should == @artist.id
       
         result[:songs].should_not == nil

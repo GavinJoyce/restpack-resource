@@ -3,8 +3,19 @@ require 'active_support/core_ext/hash'
 module RestPack
   module Resource
     module Pageable      
-      def paged_resource(params = {}, overrides = {})
-        options = build_paged_options(params, overrides)
+      def paged_resource(options = {})
+        options.reverse_merge!(
+          :scope => self.all,
+          :page => 1,
+          :includes => [],
+          :filters => {},
+          :sort_by => nil,
+          :sort_direction => :ascending
+        )
+        
+        resource_normalise_options!(options)
+        resource_validate_options!(options)
+        
         get_paged_resource(options)
       end
       
@@ -76,30 +87,6 @@ module RestPack
       
       def resource_collection_name
         self.name.to_s.downcase.pluralize.to_sym
-      end
-      
-      def build_paged_options(params, overrides)        
-        options = overrides.reverse_merge( #overrides take precedence over params
-          :page => params[:page],
-          :includes => extract_includes_array_from_params(params),
-          :filters =>  self.extract_filters_from_params(params),
-          :sort_by => params[:sort_by], 
-          :sort_direction => params[:sort_direction]
-        )
-        
-        options.reverse_merge!( #defaults
-          :scope => self.all,
-          :page => 1,
-          :includes => [],
-          :filters => {},
-          :sort_by => nil,
-          :sort_direction => :ascending
-        )
-
-        resource_normalise_options!(options)
-        resource_validate_options!(options)
-        
-        options
       end
       
       def extract_filters_from_params(params)

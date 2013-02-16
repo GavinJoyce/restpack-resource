@@ -1,8 +1,9 @@
 PATH
   remote: .
   specs:
-    restpack-resource (0.0.8)
+    restpack-resource (0.1.0)
       activesupport (~> 3.2.11)
+      datamapper (~> 1.2.0)
       dm-pager (~> 1.1.0)
 
 GEM
@@ -69,7 +70,7 @@ GEM
       activesupport (>= 3.0.0)
     fastercsv (1.5.5)
     i18n (0.6.1)
-    json (1.7.6)
+    json (1.7.7)
     json_pure (1.7.6)
     multi_json (1.5.0)
     rake (10.0.3)
@@ -88,7 +89,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  datamapper (~> 1.2.0)
   dm-sqlite-adapter (~> 1.2.0)
   factory_girl (~> 4.2.0)
   rake (~> 10.0.3)
