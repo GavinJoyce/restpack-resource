@@ -25,7 +25,8 @@ module RestPack
 
         unless paged_models.empty?
           options[:includes].each do |association|
-            add_side_loads(paged_resource, paged_models, association)
+            side_loads = get_side_loads(paged_models, association)
+            paged_resource.merge!(side_loads)
           end
         end
 
@@ -39,7 +40,9 @@ module RestPack
         options[:scope].all(:conditions => options[:filters]).page(options[:page], :order => order)
       end
       
-      def add_side_loads(paged_resource, page, association)
+      def get_side_loads(paged_models, association)
+        side_loads = {}
+        
         target_model_name = association.to_s.singularize.capitalize              
         relationships = self.relationships.select {|r| r.target_model.to_s == target_model_name }
         raise InvalidInclude if relationships.empty?
@@ -48,21 +51,21 @@ module RestPack
 
         relationships.each do |relationship|
           if relationship.is_a? DataMapper::Associations::ManyToOne::Relationship
-            side_loaded_entities += page.map do |entity| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
-              relation = entity.send(relationship.name.to_sym)
+            side_loaded_entities += paged_models.map do |model| #TODO: GJ: PERF: we can bypass datamapper associations and get by a list of ids instead
+              relation = model.send(relationship.name.to_sym)
               relation ? model_as_resource(relation) : nil
             end
           elsif relationship.is_a? DataMapper::Associations::OneToMany::Relationship
             parent_key_name = relationship.parent_key.first.name
             child_key_name = relationship.child_key.first.name        
-            foreign_keys = page.map {|e| e.send(parent_key_name)}.uniq
+            foreign_keys = paged_models.map {|e| e.send(parent_key_name)}.uniq
                 
             #TODO: GJ: configurable side-load page size
             children = relationship.child_model.all(child_key_name.to_sym => foreign_keys).page({ per_page: 100 })
             side_loaded_entities += children.map { |c| model_as_resource(c) }
             
             count_key = "#{relationship.child_model_name.downcase}_count".to_sym
-            paged_resource[count_key] = children.pager.total
+            side_loads[count_key] = children.pager.total
           else
             raise InvalidInclude, "#{self.name}.#{relationship.name} can't be included when paging #{self.name.pluralize.downcase}"
           end
@@ -70,8 +73,11 @@ module RestPack
         
         side_loaded_entities.uniq!
         side_loaded_entities.compact!
-        paged_resource[association] = side_loaded_entities
+        side_loads[association] = side_loaded_entities
+        side_loads
       end
+      
+
       
       def resource_collection_name
         self.name.to_s.downcase.pluralize.to_sym
