@@ -78,8 +78,6 @@ module RestPack
         end
       end
       
-      
-      
       def get_foreign_keys(paged_models, relationship)
         parent_key_name = relationship.parent_key.first.name
         paged_models.map {|e| e.send(parent_key_name)}.uniq
@@ -87,11 +85,6 @@ module RestPack
       
       def resource_collection_name
         self.name.to_s.downcase.pluralize.to_sym
-      end
-      
-      def extract_filters_from_params(params)
-        extracted = params.extract!(*self.resource_filterable_by)
-        extracted.delete_if { |k, v| v.nil? }
       end
       
       private
