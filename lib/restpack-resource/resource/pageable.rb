@@ -23,7 +23,7 @@ module RestPack
 
         paged_resource[self.resource_collection_name] = paged_models.map { |model| model_as_resource(model) }
 
-        unless page.empty?
+        unless paged_models.empty?
           options[:includes].each do |association|
             add_side_loads(paged_resource, paged_models, association)
           end
