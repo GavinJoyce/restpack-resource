@@ -1,4 +1,8 @@
-# restpack-resource [![Build Status](https://api.travis-ci.org/RestPack/restpack-resource.png?branch=master)](https://travis-ci.org/RestPack/restpack-resource) [![Code Climate](https://codeclimate.com/github/RestPack/restpack-resource.png)](https://codeclimate.com/github/RestPack/restpack-resource) [![Dependency Status](https://gemnasium.com/RestPack/restpack-resource.png)](https://gemnasium.com/RestPack/restpack-resource)
+
+# NOTE: this has been superseded by https://github.com/RestPack/restpack-serializer
+
+
+## restpack-resource
 
 RESTful resource paging, side-loading, filtering and sorting. 
 
